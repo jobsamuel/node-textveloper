@@ -1,0 +1,36 @@
+{
+  "name": "textveloper",
+  "version": "0.2.0",
+  "description": "Librería Textveloper para Node.js",
+  "main": "index.js",
+  "scripts": {
+    "watch": "babel textveloper.js -w -o index.js",
+    "compile": "babel textveloper.js -o index.js",
+    "prepublish": "npm run compile",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jobsamuel/node-textveloper.git"
+  },
+  "keywords": [
+    "sms",
+    "e-commerce",
+    "comercio",
+    "notificacion",
+    "transaccion",
+    "venezuela"
+  ],
+  "author": "Jobsamuel Núñez <jobsamuel.nunez@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jobsamuel/node-textveloper/issues"
+  },
+  "homepage": "https://github.com/jobsamuel/node-textveloper#readme",
+  "dependencies": {
+    "request": "^2.65.0"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23"
+  }
+}
