@@ -5,6 +5,8 @@ import request from 'request';
 function Textveloper({ cuentaToken, subcuentaToken }) {
 	if (!cuentaToken || !subcuentaToken) {
 		throw new Error('Debe colocar los parámetros cuentaToken y subcuentaToken.');
+	} else if (typeof cuentaToken !== 'string' || typeof subcuentaToken !== 'string') {
+		throw new Error('Los parámetros cuentaToken y subcuentaToken deben ser string.');
 	}
 
 	this._cuentaToken =  cuentaToken;
@@ -14,6 +16,14 @@ function Textveloper({ cuentaToken, subcuentaToken }) {
 Textveloper.prototype.enviar = function({ telefono, mensaje }, callback) {
 	if (!telefono || !mensaje) {
 		throw new Error('Debe colocar los parámetros telefono y mensaje para enviar un SMS.');
+	} else if (typeof telefono !== 'string' || typeof mensaje !== 'string') {
+		const error = new Error('Los parámetros telefono y mensaje deben ser string.');
+		callback(error);
+	} else if (telefono[0] !== '0') {
+		const mensaje = 'El parámetro telefono debe poseer obligatoriamente ' +
+			'uno de los siguientes prefijos: 0414, 0424, 0426, 0416.';
+		const error = new Error(mensaje);
+		callback(error);
 	}
 
 	const form = {
@@ -41,7 +51,7 @@ Textveloper.prototype.enviar = function({ telefono, mensaje }, callback) {
 	});
 }
 
-Textveloper.prototype.saldo = function(cuenta, callback) {
+Textveloper.prototype.puntos = function(cuenta, callback) {
 	const form = {
 		cuenta_token: this._cuentaToken
 	};
@@ -50,7 +60,7 @@ Textveloper.prototype.saldo = function(cuenta, callback) {
 
 	if (!cuenta) {
 		throw new Error('El primer argumento debe se un string o un callback function.');
-	} else if (typeof cuenta === 'string' && cuenta !== 'cuenta') {
+	} else if (typeof cuenta === 'string') {
 		if (cuenta === 'subcuenta') {
 			url = 'http://api.textveloper.com/saldo-subcuenta/';
 			form.subcuenta_token = this._subcuentaToken;
@@ -90,8 +100,8 @@ Textveloper.prototype.historial = function(tipo, callback) {
 
 	if (!tipo) {
 		throw new Error('El primer argumento debe se un string o un callback function.');
-	} else if (typeof tipo === 'string' && tipo !== 'cuenta') {
-		if (tipo === 'subcuenta') {
+	} else if (typeof tipo === 'string') {
+		if (tipo === 'transferencias') {
 			url = 'http://api.textveloper.com/historial-transferencias/';
 		} else if (tipo === 'compras') {
 			url = 'http://api.textveloper.com/historial-compras/';
