@@ -48,6 +48,10 @@ sms.enviar(config, function(err, respuesta) {
 });
 ```
 
+## documentación
+
+* [Documentación de la librería Textveloper](DOCUMENTACION.md)
+
 ## licencia
 
 Licencia [MIT](http://opensource.org/licenses/MIT) :copyright: 2015 Jobsamuel Núñez
