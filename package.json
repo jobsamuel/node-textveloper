@@ -1,6 +1,6 @@
 {
   "name": "textveloper",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Librería Textveloper para Node.js",
   "main": "index.js",
   "scripts": {
@@ -32,5 +32,8 @@
   },
   "devDependencies": {
     "babel": "^5.8.23"
+  },
+  "engines": {
+    "node": ">= 4"
   }
 }
