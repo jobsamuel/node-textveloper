@@ -17,7 +17,7 @@
 
 # requisitos
 
-* [Node](https://nodejs.org/en/)
+* [Node 4](https://nodejs.org/en/) (o superior)
 * [Una cuenta en Textveloper](http://textveloper.com/)
 
 # instalación
@@ -37,7 +37,7 @@ const cuentaToken = process.env.TEXTVELOPER_CUENTA_TOKEN || '<CUENTA-TOKEN>';
 const subcuentaToken = process.env.TEXTVELOPER_SUBCUENTA_TOKEN || '<SUBCUENTA-TOKEN>';
 
 // Crear una nueva instancia de Textveloper
-const sms = new Textveloper(cuentaToken, subcuentaToken);
+const sms = new Textveloper({ cuentaToken, subcuentaToken });
 
 // Enviar un SMS
 sms.enviar({
@@ -55,7 +55,30 @@ sms.enviar({
 
 # api
 
-A continuación se describen los métodos disponibles en la librería **textveloper**.
+### Textveloper `new Textveloper(tokens)`
+
+Crea una nueva instancia de la clase **Textveloper**.
+
+#### argumentos
+
+`tokens` Define las llaves de acceso al API de [Textveloper](http://textveloper.com/). Debe ser un *object* con los siguientes parámetros:
+
+* `cuentaToken` Llave que identifica su perfil (cuenta principal) en Textveloper. Debe ser un *string*.
+
+* `subcuentaToken` Llave que identifica una sub-cuenta en Textveloper. Debe ser un *string*.
+
+#### ejemplo
+
+Ejemplo.js
+
+```js
+// ...
+
+const sms = new Textveloper({
+  cuentaToken: '<CUENTA-TOKEN>',
+  subcuentaToken: '<SUBCUENTA-TOKEN>'
+});
+```
 
 ### Enviar `enviar(config, callback)`
 
@@ -65,9 +88,9 @@ Envía un SMS a un destinatario y retorna una respuesta con el resultado de la o
 
 `config` Define el número telefónico y mensaje que se desea enviar. Debe ser un *object*. Los valores requeridos son:
 
-* `numero`: Número telefónico del destinatarios del SMS. Debe ser un *string* y poseer obligatoriamente uno de los siguientes prefijos: 0414, 0424, 0426, 0416.
+* `numero` Número telefónico del destinatarios del SMS. Debe ser un *string* y poseer obligatoriamente uno de los siguientes prefijos: 0414, 0424, 0426, 0416.
 
-* `mensaje`: Texto que desea enviar al destinatario. Debe ser un *string* y **poseer un máximo de 145 caracteres**.
+* `mensaje` Texto que desea enviar al destinatario. Debe ser un *string* y **poseer un máximo de 145 caracteres**.
 
 `callback` Función que será llamada una vez procesada la consulta. La misma retorna dos argumentos: err y respuesta.
 
@@ -106,8 +129,9 @@ Consulta los puntos disponibles en una cuenta y retorna una respuesta con el res
 
 `cuenta` (opcional) Define la cuenta que se va a consultar. Debe ser un *string*. Las opciones disponibles son:
 
-* **cuenta**: Puntos disponibles en la *cuenta*.
-* **subcuenta**: Puntos disponibles en la *subcuenta* correspondiente al `subcuentaToken` utilizado al definir la instancia de Textveloper.
+* **cuenta** Puntos disponibles en la *cuenta*.
+
+* **subcuenta** Puntos disponibles en la *subcuenta* correspondiente al `subcuentaToken` utilizado al definir la instancia de Textveloper.
 
 <sup>De no colocarse opción alguna, se retornan por defecto los puntos disponibles en <b>cuenta</b>.</sup>
 
@@ -146,9 +170,11 @@ Consulta el historial registrado en una cuenta y retorna una respuesta con el re
 
 `tipo` (opcional) Define el historial a consultar. Debe ser un *string*. Las opciones disponibles son:
 
-* **envios**: SMS enviados por la *cuenta*.
-* **compras**: Puntos adquiridos para la *cuenta*.
-* **transferencias**: Puntos transferidos a la *subcuenta* correspondiente al `subcuentaToken` utilizado al definir la instancia de Textveloper.
+* **envios** SMS enviados por la *cuenta*.
+
+* **compras** Puntos adquiridos para la *cuenta*.
+
+* **transferencias** Puntos transferidos a la *subcuenta* correspondiente al `subcuentaToken` utilizado al definir la instancia de Textveloper.
 
 <sup>De no colocarse opción alguna, se retorna por defecto el historial de <b>envios</b>.</sup>
 
@@ -188,7 +214,7 @@ El resultado será:
       "mensaje": "SMS no tan viejo",
       "fecha": "2015-8-30 07:14:33"
     },
-    { ...más_datos... }
+    ...más_datos...
   ]
 }
 ```

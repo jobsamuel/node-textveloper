@@ -34,13 +34,15 @@ $ npm install textveloper
 ```js
 import Textveloper from 'textveloper';
 
-const sms = new Textveloper('<CUENTA-TOKEN>', '<SUBCUENTA-TOKEN>');
-const config = {
-	telefono: '04141234567', 
-	mensaje: 'Probando el módulo textveloper.' 
-};
+const sms = new Textveloper({
+    cuentaToken: '<CUENTA-TOKEN>',
+    subcuentaToken: '<SUBCUENTA-TOKEN>'
+});
 
-sms.enviar(config, function(err, respuesta) {
+sms.enviar({
+    telefono: '04141234567', 
+    mensaje: 'Probando el módulo textveloper.' 
+}, function(err, respuesta) {
     if (err) {
         // haz algo con el error.
     }
