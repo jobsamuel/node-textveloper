@@ -19,7 +19,7 @@ Textveloper.prototype.enviar = function({ telefono, mensaje }, callback) {
 	} else if (typeof telefono !== 'string' || typeof mensaje !== 'string') {
 		const error = new Error('Los parámetros telefono y mensaje deben ser string.');
 		callback(error);
-	} else if (telefono[0] !== '0') {
+	} else if (!telefono.startsWith('0')) {
 		const mensaje = 'El parámetro telefono debe poseer obligatoriamente ' +
 			'uno de los siguientes prefijos: 0414, 0424, 0426, 0416.';
 		const error = new Error(mensaje);
@@ -40,11 +40,11 @@ Textveloper.prototype.enviar = function({ telefono, mensaje }, callback) {
 
 	request(config, function(err, response, body) {
 		if (err) {
-			const _err = new Error(err);
-			return callback(_err); 
+			const error = new Error(err);
+			return callback(error); 
 		} else if (response.statusCode !== 200) {
-			const _err = new Error(body);
-			return callback(_err);
+			const error = new Error(body);
+			return callback(error);
 		} else {
 			return callback(null, body);
 		}
@@ -79,11 +79,11 @@ Textveloper.prototype.puntos = function(cuenta, callback) {
 
 	request(config, function(err, response, body) {
 		if (err) {
-			const _err = new Error(err);
-			return cb(_err); 
+			const error = new Error(err);
+			return cb(error); 
 		} else if (response.statusCode !== 200) {
-			const _err = new Error(body);
-			return cb(_err);
+			const error = new Error(body);
+			return cb(error);
 		} else {
 			return cb(null, body);
 		}
