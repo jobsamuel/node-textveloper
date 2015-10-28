@@ -12,7 +12,7 @@
 1. [Requisitos](#requisitos)
 2. [Instalación](#instalación)
 3. [API](#api)
-4. [Referencias](#refencias)
+4. [Referencias](#referencias)
 5. [Licencia](#licencia)
 
 # requisitos
@@ -158,7 +158,7 @@ El resultado será:
   "transaccion": "exitosa",
   "puntos_enviados": "99",
   "total_puntos": "1000",
-  "puntos_disponibles":"901"
+  "puntos_disponibles": "901"
 }
 ```
 
