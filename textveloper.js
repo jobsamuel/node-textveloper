@@ -3,55 +3,73 @@
 import request from 'request';
 
 class Textveloper {
-	constructor({ cuentaToken, subcuentaToken }) {
-		if (!cuentaToken || !subcuentaToken) {
-			throw new Error('Debe colocar los parámetros cuentaToken y subcuentaToken.');
-		} else if (typeof cuentaToken !== 'string' || typeof subcuentaToken !== 'string') {
-			throw new Error('Los parámetros cuentaToken y subcuentaToken deben ser string.');
+	constructor({ cuenta_token, aplicacion_token }) {
+		if (!cuenta_token || !aplicacion_token) {
+			throw new Error('Se requiren los parámetros \'cuenta_token\' y \'aplicacion_token\'.');
+		} 
+
+		if (typeof cuenta_token !== 'string' || typeof aplicacion_token !== 'string') {
+			throw new Error('Los parámetros \'cuenta_token\' y \'aplicacion_token\' deben ser String.');
 		}
 
-		this._cuentaToken =  cuentaToken;
-		this._subcuentaToken = subcuentaToken;
+		this._cuenta_token = cuenta_token;
+		this._aplicacion_token = aplicacion_token;
 	}
 
 	enviar({ telefono, mensaje }, callback) {
 		if (!telefono || !mensaje) {
-			throw new Error('Debe colocar los parámetros telefono y mensaje para enviar un SMS.');
-		} else if (typeof telefono !== 'string' || typeof mensaje !== 'string') {
-			const error = new Error('Los parámetros telefono y mensaje deben ser string.');
-			callback(error);
-		} else if (!telefono.startsWith('0')) {
-			const mensaje = 'El parámetro telefono debe poseer obligatoriamente ' +
-				'uno de los siguientes prefijos: 0414, 0424, 0426, 0416.';
-			const error = new Error(mensaje);
-			callback(error);
+			throw new Error('Se requieren los parámetros \'telefono\' y \'mensaje\' para enviar un SMS.');
+		} 
+
+		if (typeof telefono !== 'string' || typeof mensaje !== 'string') {
+			const _error = new Error(_mensaje);
+			_error.message = `Se esperaba que 'telefono' y 'mensaje' fuesen string, pero ` +
+				`se recibió ${typeof telefono} y ${typeof mensaje}.`;
+
+			return callback(_error);
+		} 
+
+		if (!telefono.startsWith('0')) {
+			const _error = new Error();
+			_error.message = 'El parámetro \'telefono\' debe poseer obligatoriamente ' +
+				'uno de los siguientes prefijos: 0412, 0414, 0424, 0426, 0416.';
+			
+			return callback(_error);
 		}
 
 		const form = {
-			cuenta_token: this._cuentaToken,
-			subcuenta_token: this._subcuentaToken,
+			cuenta_token: this._cuenta_token,
+			aplicacion_token: this._aplicacion_token,
 			telefono, 
 			mensaje 
 		};
+
 		const config = {
-			url: 'http://api.textveloper.com/enviar/',
+			url: 'http://api.textveloper.com/sms/enviar/',
 			method: 'POST',
 			form
 		};
 
-		request(config, function(err, response, body) {
-			if (err) {
-				const error = new Error(err);
-				return callback(error); 
-			} else if (response.statusCode !== 200) {
-				const error = new Error(body);
-				return callback(error);
-			} else {
-				return callback(null, body);
+		request(config, function(error, response, body) {
+			if (error) {
+				const _error = new Error();
+				_error.message = `No se pudo enviar el SMS: ${error.message}`;
+
+				return callback(_error); 
+			} 
+
+			if (response.statusCode !== 200) {
+				const _error = new Error();
+				_error.message = JSON.parse(body).detalle};
+
+				return callback(_error);
 			}
+			
+			callback(null, body);
 		});
 	}
 
+	// Obsotelo
 	puntos(cuenta, callback) {
 		const form = {
 			cuenta_token: this._cuentaToken
@@ -91,6 +109,7 @@ class Textveloper {
 		});
 	}
 
+	// Obsoleto
 	historial(tipo, callback) {
 		const form = {
 			cuenta_token: this._cuentaToken,
