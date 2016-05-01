@@ -5,11 +5,11 @@ import request from 'request';
 class Textveloper {
 	constructor({ cuenta_token, aplicacion_token }) {
 		if (!cuenta_token || !aplicacion_token) {
-			throw new Error('Se requiren los parámetros \'cuenta_token\' y \'aplicacion_token\'.');
+			throw new Error('Se requieren los parámetros \'cuenta_token\' y \'aplicacion_token\'.');
 		} 
 
 		if (typeof cuenta_token !== 'string' || typeof aplicacion_token !== 'string') {
-			throw new Error('Los parámetros \'cuenta_token\' y \'aplicacion_token\' deben ser String.');
+			throw new Error('Los parámetros \'cuenta_token\' y \'aplicacion_token\' deben ser string.');
 		}
 
 		this._cuenta_token = cuenta_token;
@@ -23,16 +23,24 @@ class Textveloper {
 
 		if (typeof telefono !== 'string' || typeof mensaje !== 'string') {
 			const _error = new Error(_mensaje);
-			_error.message = `Se esperaba que 'telefono' y 'mensaje' fuesen string, pero ` +
-				`se recibió ${typeof telefono} y ${typeof mensaje}.`;
+			_error.message = JSON.stringify({
+				mensaje: 'El \'telefono\' y/o \'mensaje\' son inválidos.',
+				codigo: 'PARAMETROS_INVALIDOS',
+				detalle: `Se esperaba que 'telefono' y 'mensaje' fuesen string, pero ` +
+				`se recibió ${typeof telefono} y ${typeof mensaje}.`
+			});
 
 			return callback(_error);
 		} 
 
 		if (!telefono.startsWith('0')) {
 			const _error = new Error();
-			_error.message = 'El parámetro \'telefono\' debe poseer obligatoriamente ' +
-				'uno de los siguientes prefijos: 0412, 0414, 0424, 0426, 0416.';
+			_error.message = JSON.stringify({
+				mensaje: 'Número telefónico inválido.',
+				codigo: 'TELEFONO_INVALIDO',
+				detalle: 'El parámetro \'telefono\' debe poseer obligatoriamente ' +
+				'uno de los siguientes prefijos: 0412, 0414, 0424, 0426, 0416.',
+			});
 			
 			return callback(_error);
 		}
@@ -53,19 +61,33 @@ class Textveloper {
 		request(config, function(error, response, body) {
 			if (error) {
 				const _error = new Error();
-				_error.message = `No se pudo enviar el SMS: ${error.message}`;
+				_error.message = JSON.stringify({
+					mensaje: 'Falló intento de envío de SMS.',
+					codigo: 'SMS_FALLIDO',
+					detalle: error.message
+				});
 
 				return callback(_error); 
 			} 
 
 			if (response.statusCode !== 200) {
 				const _error = new Error();
-				_error.message = JSON.parse(body).detalle;
+				_error.message = JSON.stringify({
+					mensaje: 'El SMS no pudo ser procesado.',
+					codigo: 'SMS_NO_PROCESADO',
+					detalle: JSON.parse(body).detalle
+				});
 
 				return callback(_error);
 			}
+
+			const resultado = JSON.stringify({
+				mensaje: JSON.parse(body).detalle,
+				codigo: 'SMS_PROCESADO',
+				detalle: 'n/a'
+			});
 			
-			callback(null, body);
+			callback(null, resultado);
 		});
 	}
 
