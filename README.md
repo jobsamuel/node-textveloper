@@ -56,4 +56,4 @@ sms.enviar({
 
 ## licencia
 
-Licencia [MIT](http://opensource.org/licenses/MIT) :copyright: 2015 Jobsamuel Núñez
+Licencia [MIT](http://opensource.org/licenses/MIT) :copyright: 2016 Jobsamuel Núñez
