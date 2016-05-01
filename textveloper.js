@@ -91,43 +91,47 @@ class Textveloper {
 		});
 	}
 
-	// Obsotelo
-	puntos(cuenta, callback) {
+	cuenta(callback) {
 		const form = {
-			cuenta_token: this._cuentaToken
+			cuenta_token: this._cuenta_token,
+			aplicacion_token: this._aplicacion_token,
 		};
-		let url = 'http://api.textveloper.com/saldo-cuenta/';
-		let cb = callback;
-
-		if (!cuenta) {
-			throw new Error('El primer argumento debe se un string o un callback function.');
-		} else if (typeof cuenta === 'string') {
-			if (cuenta === 'subcuenta') {
-				url = 'http://api.textveloper.com/saldo-subcuenta/';
-				form.subcuenta_token = this._subcuentaToken;
-			}
-		} else if (typeof cuenta === 'function') {
-			cb = cuenta;
-		} else {
-			throw new Error(`Se esperaba un string o un callback function, pero se obtuvo un ${typeof cuenta}`);
-		}
 
 		const config = {
+			url: 'http://api.textveloper.com/aplicacion/detalle/',
 			method: 'POST',
-			url,
 			form
 		};
 
-		request(config, function(err, response, body) {
-			if (err) {
-				const error = new Error(err);
-				return cb(error); 
-			} else if (response.statusCode !== 200) {
-				const error = new Error(body);
-				return cb(error);
-			} else {
-				return cb(null, body);
+		request(config, function(error, response, body) {
+			if (error) {
+				const _error = new Error();
+				_error.message = JSON.stringify({
+					mensaje: 'Falló intento de consulta de información.',
+					codigo: 'CONSULTA_FALLIDA',
+					detalle: error.message
+				});
+
+				return callback(_error); 
 			}
+
+			if (response.statusCode !== 200) {
+				const _error = new Error();
+				_error.message = JSON.stringify({
+					mensaje: 'La consulta de información no pudo ser procesada.',
+					codigo: 'CONSULTA_NO_PROCESADA',
+					detalle: JSON.parse(body).detalle
+				});
+
+				return callback(_error);
+			}
+
+			const resultado = JSON.stringify({
+				codigo: 'CONSULTA_PROCESADA',
+				data: JSON.parse(body)
+			});
+			
+			callback(null, resultado);
 		});
 	}
 
