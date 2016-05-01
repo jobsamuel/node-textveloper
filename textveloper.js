@@ -60,7 +60,7 @@ class Textveloper {
 
 			if (response.statusCode !== 200) {
 				const _error = new Error();
-				_error.message = JSON.parse(body).detalle};
+				_error.message = JSON.parse(body).detalle;
 
 				return callback(_error);
 			}
