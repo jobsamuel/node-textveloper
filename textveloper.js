@@ -112,7 +112,7 @@ class Textveloper {
 					detalle: error.message
 				});
 
-				return callback(_error); 
+				return callback(_error);
 			}
 
 			if (response.statusCode !== 200) {
@@ -135,45 +135,135 @@ class Textveloper {
 		});
 	}
 
-	// Obsoleto
-	historial(tipo, callback) {
-		const form = {
-			cuenta_token: this._cuentaToken,
-			subcuenta_token: this._subcuentaToken
-		};
-		let url = 'http://api.textveloper.com/historial-envios/';
-		let cb = callback;
-
-		if (!tipo) {
-			throw new Error('El primer argumento debe se un string o un callback function.');
-		} else if (typeof tipo === 'string') {
-			if (tipo === 'transferencias') {
-				url = 'http://api.textveloper.com/historial-transferencias/';
-			} else if (tipo === 'compras') {
-				url = 'http://api.textveloper.com/historial-compras/';
-			}
-		} else if (typeof tipo === 'function') {
-			cb = tipo;
-		} else {
-			throw new Error(`Se esperaba un string o un callback function, pero se obtuvo un ${typeof tipo}`);
+	enviados(telefono, callback) {
+		if (!telefono || !callback) {
+			throw new Error('Se requieren los argumentos \'telefono\' y \'callback\' para consultar el historial.');
 		}
 
+		if (typeof telefono !== 'string' || typeof callback !== 'function') {
+			throw new Error(`Se esperaba que los argumentos 'telefono' y 'callback' fuesen string y function, ` +
+				`pero se recibió ${typeof telefono} y ${typeof callback}.`);
+		}
+
+		if (!telefono.startsWith('0')) {
+			const _error = new Error();
+			_error.message = JSON.stringify({
+				mensaje: 'Número telefónico inválido.',
+				codigo: 'TELEFONO_INVALIDO',
+				detalle: 'El parámetro \'telefono\' debe poseer obligatoriamente ' +
+				'uno de los siguientes prefijos: 0412, 0414, 0424, 0426, 0416.',
+			});
+
+			return callback(_error);
+		}
+
+		const form = {
+			cuenta_token: this._cuenta_token,
+			telefono: telefono,
+			pagina: 1
+		};
+
 		const config = {
+			url: 'http://api.textveloper.com/sms/log/enviados/',
 			method: 'POST',
-			url,
 			form
 		};
 
-		request(config, function(err, response, body) {
-			if (err) {
-				const error = new Error(err);
-				return cb(error); 
-			} else if (response.statusCode !== 200) {
-				const error = new Error(body);
-				return cb(error);
-			} else {
-				return cb(null, body);
+		request(config, function(error, response, body) {
+			if (error) {
+				const _error = new Error();
+				_error.message = JSON.stringify({
+					mensaje: 'Falló intento de consulta del historial.',
+					codigo: 'CONSULTA_FALLIDA',
+					detalle: error.message
+				});
+
+				return callback(_error);
 			}
+
+			if (response.statusCode !== 200) {
+				const _error = new Error();
+				_error.message = JSON.stringify({
+					mensaje: 'La consulta del historial no pudo ser procesada.',
+					codigo: 'CONSULTA_NO_PROCESADA',
+					detalle: JSON.parse(body).detalle
+				});
+
+				return callback(_error);
+			}
+
+			const resultado = JSON.stringify({
+				codigo: 'CONSULTA_PROCESADA',
+				data: JSON.parse(body)
+			});
+
+			callback(null, resultado);
+		});
+	}
+
+	recibidos(telefono, callback) {
+		if (!telefono || !callback) {
+			throw new Error('Se requieren los argumentos \'telefono\' y \'callback\' para consultar el historial.');
+		}
+
+		if (typeof telefono !== 'string' || typeof callback !== 'function') {
+			throw new Error(`Se esperaba que los argumentos 'telefono' y 'callback' fuesen string y function, ` +
+				`pero se recibió ${typeof telefono} y ${typeof callback}.`);
+		}
+
+		if (!telefono.startsWith('0')) {
+			const _error = new Error();
+			_error.message = JSON.stringify({
+				mensaje: 'Número telefónico inválido.',
+				codigo: 'TELEFONO_INVALIDO',
+				detalle: 'El parámetro \'telefono\' debe poseer obligatoriamente ' +
+				'uno de los siguientes prefijos: 0412, 0414, 0424, 0426, 0416.',
+			});
+
+			return callback(_error);
+		}
+
+		const form = {
+			cuenta_token: this._cuenta_token,
+			telefono: telefono,
+			pagina: 1
+		};
+
+		const config = {
+			url: 'http://api.textveloper.com/sms/log/recibidos/',
+			method: 'POST',
+			form
+		};
+
+		request(config, function(error, response, body) {
+			if (error) {
+				const _error = new Error();
+				_error.message = JSON.stringify({
+					mensaje: 'Falló intento de consulta del historial.',
+					codigo: 'CONSULTA_FALLIDA',
+					detalle: error.message
+				});
+
+				return callback(_error);
+			}
+
+			if (response.statusCode !== 200) {
+				const _error = new Error();
+				_error.message = JSON.stringify({
+					mensaje: 'La consulta del historial no pudo ser procesada.',
+					codigo: 'CONSULTA_NO_PROCESADA',
+					detalle: JSON.parse(body).detalle
+				});
+
+				return callback(_error);
+			}
+
+			const resultado = JSON.stringify({
+				codigo: 'CONSULTA_PROCESADA',
+				data: JSON.parse(body)
+			});
+
+			callback(null, resultado);
 		});
 	}
 }
