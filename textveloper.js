@@ -135,23 +135,40 @@ class Textveloper {
 		});
 	}
 
-	enviados(telefono, callback) {
-		if (!telefono || !callback) {
-			throw new Error('Se requieren los argumentos \'telefono\' y \'callback\' para consultar el historial.');
+	historial(opciones, callback) {
+		if (!opciones || !callback) {
+			const err = 'Se requieren los argumentos \'opciones\' y \'callback\' para consultar el historial.';
+
+			throw new Error(err);
 		}
 
-		if (typeof telefono !== 'string' || typeof callback !== 'function') {
-			throw new Error(`Se esperaba que los argumentos 'telefono' y 'callback' fuesen string y function, ` +
-				`pero se recibió ${typeof telefono} y ${typeof callback}.`);
+		if (typeof opciones === 'object' && !opciones.telefono) {
+			const err = 'Se requiere el parámetro \'teléfono\' para consultar el historial.';
+
+			throw new Error(err);
 		}
 
-		if (!telefono.startsWith('0')) {
+		if (typeof opciones !== 'object' && typeof opciones !== 'string') {
+			const err = `Se esperaba que el argumento 'opciones' fuese object o string, ` + 
+				`pero se recibió ${typeof opciones}.`;
+
+			throw new Error(err);
+		}
+
+		if (typeof callback !== 'function') {
+			const err = `Se esperaba que el argumento 'callback' fuese function, ` +
+				`pero se recibió ${typeof callback}.`;
+
+			throw new Error(err);
+		}
+
+		if ((opciones.telefono && !opciones.telefono.startsWith('0')) || (typeof opciones === 'string' && !opciones.startsWith('0'))) {
 			const _error = new Error();
 			_error.message = JSON.stringify({
 				mensaje: 'Número telefónico inválido.',
 				codigo: 'TELEFONO_INVALIDO',
-				detalle: 'El parámetro \'telefono\' debe poseer obligatoriamente ' +
-				'uno de los siguientes prefijos: 0412, 0414, 0424, 0426, 0416.',
+				detalle: 'El teléfono debe poseer obligatoriamente uno de los siguientes ' +
+				'prefijos: 0412, 0414, 0424, 0426, 0416.',
 			});
 
 			return callback(_error);
@@ -159,78 +176,14 @@ class Textveloper {
 
 		const form = {
 			cuenta_token: this._cuenta_token,
-			telefono: telefono,
-			pagina: 1
+			telefono: opciones.telefono || opciones,
+			pagina: opciones.pagina || 1
 		};
+
+		const endpoint = opciones.tipo ? opciones.tipo : 'enviados';
 
 		const config = {
-			url: 'http://api.textveloper.com/sms/log/enviados/',
-			method: 'POST',
-			form
-		};
-
-		request(config, function(error, response, body) {
-			if (error) {
-				const _error = new Error();
-				_error.message = JSON.stringify({
-					mensaje: 'Falló intento de consulta del historial.',
-					codigo: 'CONSULTA_FALLIDA',
-					detalle: error.message
-				});
-
-				return callback(_error);
-			}
-
-			if (response.statusCode !== 200) {
-				const _error = new Error();
-				_error.message = JSON.stringify({
-					mensaje: 'La consulta del historial no pudo ser procesada.',
-					codigo: 'CONSULTA_NO_PROCESADA',
-					detalle: JSON.parse(body).detalle
-				});
-
-				return callback(_error);
-			}
-
-			const resultado = JSON.stringify({
-				codigo: 'CONSULTA_PROCESADA',
-				data: JSON.parse(body)
-			});
-
-			callback(null, resultado);
-		});
-	}
-
-	recibidos(telefono, callback) {
-		if (!telefono || !callback) {
-			throw new Error('Se requieren los argumentos \'telefono\' y \'callback\' para consultar el historial.');
-		}
-
-		if (typeof telefono !== 'string' || typeof callback !== 'function') {
-			throw new Error(`Se esperaba que los argumentos 'telefono' y 'callback' fuesen string y function, ` +
-				`pero se recibió ${typeof telefono} y ${typeof callback}.`);
-		}
-
-		if (!telefono.startsWith('0')) {
-			const _error = new Error();
-			_error.message = JSON.stringify({
-				mensaje: 'Número telefónico inválido.',
-				codigo: 'TELEFONO_INVALIDO',
-				detalle: 'El parámetro \'telefono\' debe poseer obligatoriamente ' +
-				'uno de los siguientes prefijos: 0412, 0414, 0424, 0426, 0416.',
-			});
-
-			return callback(_error);
-		}
-
-		const form = {
-			cuenta_token: this._cuenta_token,
-			telefono: telefono,
-			pagina: 1
-		};
-
-		const config = {
-			url: 'http://api.textveloper.com/sms/log/recibidos/',
+			url: `http://api.textveloper.com/sms/log/${endpoint}/`,
 			method: 'POST',
 			form
 		};
