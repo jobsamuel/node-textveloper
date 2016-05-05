@@ -5,11 +5,15 @@ import request from 'request';
 class Textveloper {
 	constructor({ cuenta_token, aplicacion_token }) {
 		if (!cuenta_token || !aplicacion_token) {
-			throw new Error('Se requieren los parámetros \'cuenta_token\' y \'aplicacion_token\'.');
+			const err = 'Se requieren los parámetros \'cuenta_token\' y \'aplicacion_token\'.';
+
+			throw new Error(err);
 		} 
 
 		if (typeof cuenta_token !== 'string' || typeof aplicacion_token !== 'string') {
-			throw new Error('Los parámetros \'cuenta_token\' y \'aplicacion_token\' deben ser string.');
+			const err = 'Los parámetros \'cuenta_token\' y \'aplicacion_token\' deben ser string.';
+
+			throw new Error(err);
 		}
 
 		this._cuenta_token = cuenta_token;
@@ -18,7 +22,9 @@ class Textveloper {
 
 	enviar({ telefono, mensaje }, callback) {
 		if (!telefono || !mensaje) {
-			throw new Error('Se requieren los parámetros \'telefono\' y \'mensaje\' para enviar un SMS.');
+			const err = 'Se requieren los parámetros \'telefono\' y \'mensaje\' para enviar un SMS.';
+
+			throw new Error(err);
 		} 
 
 		if (typeof telefono !== 'string' || typeof mensaje !== 'string') {
