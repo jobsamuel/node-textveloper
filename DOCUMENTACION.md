@@ -32,22 +32,22 @@ $ npm install textveloper --save
 // Incluir el módulo en tu proyecto
 import Textveloper from 'textveloper';
 
-// Incluir los token de acceso al API de Textveloper
-const cuentaToken = process.env.TEXTVELOPER_CUENTA_TOKEN || '<CUENTA-TOKEN>';
-const subcuentaToken = process.env.TEXTVELOPER_SUBCUENTA_TOKEN || '<SUBCUENTA-TOKEN>';
-
-// Crear una nueva instancia de Textveloper
-const sms = new Textveloper({ cuentaToken, subcuentaToken });
+// Crear una nueva instancia de Textveloper e incluir tokens de acceso al API
+const sms = new Textveloper({ 
+  cuenta_token: '<CUENTA-TOKEN-TEXTVELOPER>', 
+  aplicacion_token: '<APLICACION-TOKEN-TEXTVELOPER>'
+});
 
 // Enviar un SMS
 sms.enviar({
   telefono: '04141234567', 
   mensaje: 'Probando el módulo textveloper.' 
-}, function(err, respuesta) {
-    if (err) {
-      // haz algo con el error.
-    }
-    // haz algo con la respuesta.
+}, function(error, respuesta) {
+  if (error) {
+    // hacer algo con el error.
+  }
+    
+  // hacer algo con la respuesta.
 });
 ```
 
@@ -63,9 +63,9 @@ Crea una nueva instancia de la clase **Textveloper**.
 
 `tokens` Define las llaves de acceso al API de [Textveloper](http://textveloper.com/). Debe ser un *object* con los siguientes parámetros:
 
-* `cuentaToken` Llave que identifica su perfil (cuenta principal) en Textveloper. Debe ser un *string*.
+* `cuenta_token` Llave que identifica su perfil (cuenta principal) en Textveloper. Debe ser un *string*.
 
-* `subcuentaToken` Llave que identifica una sub-cuenta en Textveloper. Debe ser un *string*.
+* `aplicacion_token` Llave que identifica una aplicacion en Textveloper. Debe ser un *string*.
 
 #### ejemplo
 
@@ -75,8 +75,8 @@ Ejemplo.js
 // ...
 
 const sms = new Textveloper({
-  cuentaToken: '<CUENTA-TOKEN>',
-  subcuentaToken: '<SUBCUENTA-TOKEN>'
+  cuenta_token: '<CUENTA-TOKEN-TEXTVELOPER>',
+  aplicacion_token: '<APLICACION-TOKEN-TEXTVELOPER>'
 });
 ```
 
@@ -88,11 +88,11 @@ Envía un SMS a un destinatario y retorna una respuesta con el resultado de la o
 
 `config` Define el número telefónico y mensaje que se desea enviar. Debe ser un *object*. Los valores requeridos son:
 
-* `numero` Número telefónico del destinatarios del SMS. Debe ser un *string* y poseer obligatoriamente uno de los siguientes prefijos: 0414, 0424, 0426, 0416.
+* `numero` Número telefónico del destinatarios del SMS. Debe ser un *string* y poseer obligatoriamente uno de los siguientes prefijos: 0412, 0414, 0424, 0426, 0416.
 
 * `mensaje` Texto que desea enviar al destinatario. Debe ser un *string* y **poseer un máximo de 145 caracteres**.
 
-`callback` Función que será llamada una vez procesada la consulta. La misma retorna dos argumentos: err y respuesta.
+`callback` Función que será llamada una vez procesada la consulta. La misma retorna dos argumentos: _error_ y _respuesta_.
 
 #### ejemplo
 
@@ -102,10 +102,10 @@ Ejemplo.js
 
 sms.enviar({
   telefono: '04141234567', 
-  mensaje: 'Probando el módulo textveloper.' 
-}, function(err, respuesta) {
-    if (err) {
-      return console.log(err);
+  mensaje: 'Probando Textveloper con Node.' 
+}, function(error, respuesta) {
+    if (error) {
+      return console.log(error);
     }
     
     console.log(respuesta);
@@ -115,27 +115,19 @@ sms.enviar({
 El resultado será:
 ```json
 {
-  "transaccion": "exitosa",
-  "mensaje_transaccion": "MENSAJE_ENVIADO"
+  "mensaje": "El SMS fue encolado",
+  "codigo": "SMS_PROCESADO",
+  "detalle": "n/a"
 }
-
 ```
 
-### Puntos `puntos(cuenta, callback)`
+### Cuenta `cuenta(callback)`
 
-Consulta los puntos disponibles en una cuenta y retorna una respuesta con el resultado de la operación.
+Consulta información acerca de una aplicación y retorna una respuesta con el resultado de la operación.
 
 #### argumentos
 
-`cuenta` (opcional) Define la cuenta que se va a consultar. Debe ser un *string*. Las opciones disponibles son:
-
-* **cuenta** Puntos disponibles en la *cuenta*.
-
-* **subcuenta** Puntos disponibles en la *subcuenta* correspondiente al `subcuentaToken` utilizado al definir la instancia de Textveloper.
-
-<sup>De no colocarse opción alguna, se retornan por defecto los puntos disponibles en <b>cuenta</b>.</sup>
-
-`callback` Función que será llamada una vez procesada la consulta. La misma retorna dos argumentos: err y respuesta.
+`callback` Función que será llamada una vez procesada la consulta. La misma retorna dos argumentos: _error_ y _respuesta_.
 
 #### ejemplo
 
@@ -143,42 +135,49 @@ Ejemplo.js
 ```js
 // ...
 
-sms.puntos('subcuenta', function(err, respuesta) {
-    if (err) {
-      return console.log(err);
-    }
+sms.cuenta(function(error, respuesta) {
+  if (error) {
+    return console.log(error);
+  }
     
-    console.log(respuesta);
+  console.log(respuesta);
 });
 ```
 
 El resultado será:
 ```json
 {
-  "transaccion": "exitosa",
-  "puntos_enviados": "99",
-  "total_puntos": "1000",
-  "puntos_disponibles": "901"
+  "codigo": "CONSULTA_PROCESADA",
+  "data": {
+    "aplicacion": [
+      {
+        "web_hook_url": "http://tu.aplicacion.com/recibir/sms/",
+        "saldo": "5000.00",
+        "aplicacion_token": "abcd1234ab1234abcd1234ab1234abcd1234a",
+        "descripcion": "La descripción de tu aplicacion",
+        "nombre": "Tu aplicacion",
+        "fecha_creacion": "2016-05-04"
+      }
+    ]
+  }
 }
 ```
 
-### Historial `historial(tipo, callback)`
+### Historial `historial(config, callback)`
 
-Consulta el historial registrado en una cuenta y retorna una respuesta con el resultado de la operación.
+Consulta el historial de mensajes enviados o recibidos a un teléfono y retorna una respuesta con el resultado de la operación.
 
 #### argumentos
 
-`tipo` (opcional) Define el historial a consultar. Debe ser un *string*. Las opciones disponibles son:
+`config` Define la configuración del historial a consultar. Debe ser un *string* con un número telefónico o un *object* con los siguientes parámetros:
 
-* **envios** SMS enviados por la *cuenta*.
+* **telefono** _requerido_ Número telefónico del cual se requiere solicitar el historial.
 
-* **compras** Puntos adquiridos para la *cuenta*.
+* **tipo** _opcional_ Define el historial que se desea solicitar. Puede ser `enviados` o `recibidos`. De no definir este parámetro, por defecto se retorna el historial de SMS `enviados`
 
-* **transferencias** Puntos transferidos a la *subcuenta* correspondiente al `subcuentaToken` utilizado al definir la instancia de Textveloper.
+* **pagina** _opcional_ Define la página del historial que se desea solicitar; si el historial es muy extenso, está paginado, por lo tanto es buena prática solicitar sólo lo que se necesita. De no definir este parámetro, por defecto se retorna la pagina 1 del historial.
 
-<sup>De no colocarse opción alguna, se retorna por defecto el historial de <b>envios</b>.</sup>
-
-`callback` Función que será llamada una vez procesada la consulta. La misma retorna dos argumentos: err y respuesta.
+`callback` Función que será llamada una vez procesada la consulta. La misma retorna dos argumentos: _error_ y _respuesta_.
 
 #### ejemplo
 
@@ -186,9 +185,9 @@ Ejemplo.js
 ```js
 // ...
 
-sms.historial('envios', function(err, respuesta) {
-    if (err) {
-      return console.log(err);
+sms.historial('04141234567', function(error, respuesta) {
+    if (error) {
+      return console.log(error);
     }
     
     console.log(respuesta);
@@ -198,23 +197,34 @@ sms.historial('envios', function(err, respuesta) {
 El resultado será:
 ```json
 {
-  "transaccion": "exitosa",
-  "historico": [
+  "codigo": "CONSULTA_PROCESADA",
+  "data": [
     {
-      "codigo_log": "123456",
-      "telefono": "04141234567",
-      "estatus": "Enviado",
-      "mensaje": "SMS muy viejo",
-      "fecha": "2015-06-26 05:26:52"
+      "paginacion": { 
+        "total_sms": 500,
+        "pagina_actual": 1,
+        "total_paginas": 50
+      }
     },
     {
-      "codigo_log": "123457",
-      "telefono": "04141234567",
-      "estatus": "Enviado",
-      "mensaje": "SMS no tan viejo",
-      "fecha": "2015-8-30 07:14:33"
-    },
-    ...más_datos...
+      "mensajes": [
+        {
+          "mensaje": "Probando la librería.",
+          "fecha": "2016-05-01 10:13:48.948789",
+          "telefono": 04141234567,
+          "id_mensaje": 44362
+        },
+        {
+          "mensaje": "Probando la librería, otra vez.",
+          "fecha": "2016-05-01 11:09:32.541603",
+          "telefono": 04141234567,
+          "id_mensaje": 44363
+        },
+        {
+          más_mensajes...
+        }
+      ]
+    }
   ]
 }
 ```
