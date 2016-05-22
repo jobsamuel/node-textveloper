@@ -35,18 +35,19 @@ $ npm install textveloper
 import Textveloper from 'textveloper';
 
 const sms = new Textveloper({
-    cuentaToken: '<CUENTA-TOKEN>',
-    subcuentaToken: '<SUBCUENTA-TOKEN>'
+  cuenta_token: '<CUENTA-TOKEN>',
+  aplicacion_token: '<APLICACION-TOKEN>'
 });
 
 sms.enviar({
-    telefono: '04141234567', 
-    mensaje: 'Probando el módulo textveloper.' 
-}, function(err, respuesta) {
-    if (err) {
-        // haz algo con el error.
-    }
-    // haz algo con la respuesta.
+  telefono: '04141234567', 
+  mensaje: 'Probando la librería Textveloper.' 
+}, function(error, respuesta) {
+  if (error) {
+    // hacer algo con el error.
+  }
+
+  // hacer algo con la respuesta.
 });
 ```
 
@@ -56,4 +57,4 @@ sms.enviar({
 
 ## licencia
 
-Licencia [MIT](http://opensource.org/licenses/MIT) :copyright: 2015 Jobsamuel Núñez
+Licencia [MIT](http://opensource.org/licenses/MIT) :copyright: 2016 Jobsamuel Núñez

@@ -1,6 +1,6 @@
 {
   "name": "textveloper",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Librería Textveloper para Node.js",
   "main": "index.js",
   "scripts": {
