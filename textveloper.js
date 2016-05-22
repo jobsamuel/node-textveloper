@@ -186,7 +186,13 @@ class Textveloper {
 			pagina: opciones.pagina || 1
 		};
 
-		const endpoint = opciones.tipo ? opciones.tipo : 'enviados';
+		let endpoint;
+
+		if (opciones.tipo && (opciones.tipo === 'enviados' || opciones.tipo === 'recibidos')) {
+			endpoint = opciones.tipo;
+		} else {
+			endpoint = 'enviados';
+		}
 
 		const config = {
 			url: `http://api.textveloper.com/sms/log/${endpoint}/`,
