@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/jobsamuel/node-textveloper#readme",
   "dependencies": {
-    "request": "^2.65.0"
+    "request": "^2.81.0"
   },
   "devDependencies": {
     "babel": "^5.8.23"
