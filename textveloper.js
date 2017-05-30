@@ -8,7 +8,7 @@ class Textveloper {
 			const msj = 'Se requieren los parámetros \'cuenta_token\' y \'aplicacion_token\'.';
 
 			throw new Error(msj);
-		} 
+		}
 
 		if (typeof cuenta_token !== 'string' || typeof aplicacion_token !== 'string') {
 			const msj = 'Los parámetros \'cuenta_token\' y \'aplicacion_token\' deben ser string.';
@@ -25,7 +25,7 @@ class Textveloper {
 			const msj = 'Se requieren los parámetros \'telefono\' y \'mensaje\' para enviar un SMS.';
 
 			throw new Error(msj);
-		} 
+		}
 
 		if (typeof telefono !== 'string' || typeof mensaje !== 'string') {
 			const _error = JSON.stringify({
@@ -36,7 +36,7 @@ class Textveloper {
 			});
 
 			return callback(_error);
-		} 
+		}
 
 		if (!telefono.startsWith('0')) {
 			const _error = JSON.stringify({
@@ -45,19 +45,19 @@ class Textveloper {
 				detalle: 'El parámetro \'telefono\' debe poseer obligatoriamente ' +
 				'uno de los siguientes prefijos: 0412, 0414, 0424, 0426, 0416.',
 			});
-			
+
 			return callback(_error);
 		}
 
 		const form = {
 			cuenta_token: this._cuenta_token,
 			aplicacion_token: this._aplicacion_token,
-			telefono, 
-			mensaje 
+			telefono,
+			mensaje
 		};
 
 		const config = {
-			url: 'http://api.textveloper.com/sms/enviar/',
+			url: 'https://api.textveloper.com/sms/enviar/',
 			method: 'POST',
 			form
 		};
@@ -70,8 +70,8 @@ class Textveloper {
 					detalle: error.message
 				});
 
-				return callback(_error); 
-			} 
+				return callback(_error);
+			}
 
 			if (response.statusCode !== 200) {
 				const _error = JSON.stringify({
@@ -88,7 +88,7 @@ class Textveloper {
 				codigo: 'SMS_PROCESADO',
 				detalle: 'n/a'
 			});
-			
+
 			callback(null, resultado);
 		});
 	}
@@ -100,7 +100,7 @@ class Textveloper {
 		};
 
 		const config = {
-			url: 'http://api.textveloper.com/aplicacion/detalle/',
+			url: 'https://api.textveloper.com/aplicacion/detalle/',
 			method: 'POST',
 			form
 		};
@@ -130,7 +130,7 @@ class Textveloper {
 				codigo: 'CONSULTA_PROCESADA',
 				data: JSON.parse(body)
 			});
-			
+
 			callback(null, resultado);
 		});
 	}
@@ -188,7 +188,7 @@ class Textveloper {
 		}
 
 		const config = {
-			url: `http://api.textveloper.com/sms/log/${endpoint}/`,
+			url: `https://api.textveloper.com/sms/log/${endpoint}/`,
 			method: 'POST',
 			form
 		};
